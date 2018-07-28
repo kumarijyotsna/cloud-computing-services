@@ -1,0 +1,32 @@
+- hosts: localhost
+  tasks:
+  - name: installing docker-py
+    command: "pip install docker-py"
+  - name: making directory
+    file:
+        path: /mydocker
+        state: directory 
+        owner: apache
+  - name: copying dockerfile
+    copy: 
+       src: /root/mydocker/Dockerfile
+       dest: /mydocker/Dockerfile
+       owner: apache
+#  - name: build the image
+#    command: docker build --build-arg MYAPP_IMAGE={{ bimg }} --build-arg username={{ user }} --build-arg password={{ passwd }} /mydocker/
+
+  - name: launching image
+    docker_container:
+         name: "{{ cname }}"
+         image: "{{ bimg }}"
+         privileged: True
+         command: "{{ item }}"
+         state: started
+         exposed_ports:
+           - 4200
+         published_ports:
+           - 4445:4200
+    with_items:
+      - sleep infinity
+      - shellinaboxd -t
+    

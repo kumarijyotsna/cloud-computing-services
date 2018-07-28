@@ -1,0 +1,55 @@
+- hosts: 192.168.43.50
+  vars:
+       - name: n
+#         prompt: "enter name for directory"
+#         private: False
+  tasks:
+  - name: "creating partition"
+    parted:
+       device: /dev/sdc
+       number: 1
+       state: present
+       
+  - name: "creating vg"
+    lvg:
+       vg: myvg
+       pvs: /dev/sdc1
+       state: present 
+  - name: "creating lv"
+    lvol:
+      vg: myvg
+      lv: mylv
+      size: 1024m
+  - name: "formatting disk"
+    filesystem: 
+          fstype: ext4 
+          dev: /dev/myvg/mylv
+  - name: "creating directory"
+    file:
+       path: "/cloud/{{ n }}"
+       state: directory
+  - name: "mounting"
+    mount:
+        path: "/cloud/{{ n }}"
+        src: /dev/myvg/mylv
+        fstype: ext4
+        state: mounted
+  - name: "adding storage in exports file"
+    lineinfile:
+        path: "/etc/exports"
+        line: "/cloud/{{ n }}    *(rw,no_root_squash)"
+#  - debug:
+#        msg: "{{ ansible_enp0s3.ipv4.address }}"
+  - name: "disabling firewall"
+    command: " iptables -F "
+#- name: "installing nfs"
+#  package:
+#     name: nfs
+#     state: present
+  - name: "starting service"
+    service:
+       name: nfs
+       state: restarted
+#       enabled: true
+       
+ 
