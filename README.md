@@ -1,5 +1,5 @@
 # cloud-computing-services
-## Integratin various technologies to provide python-cgi
+## Integrating various technologies to provide python-cgi
 platform for user to select technology
 ### -Automated the task for installing and configuring Hadoop cluster(HDFS
 and Map Reduce) on Red Hat environment . Technology used are Hadoop
